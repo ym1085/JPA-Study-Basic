@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 public class JpaMain {
 
@@ -18,19 +17,19 @@ public class JpaMain {
         tx.begin();
 
         try {
-//            Member member = em.find(Member.class, 1L);
-//            member.setName("김영민 테스트");
+            // 비영속 상태
+            Member member = new Member();
+            member.setId(100L);
+            member.setName("HelloJPA");
 
-            // DB Table 대상이 아닌 객체( Entity ) 대상으로 질의
-            List<Member> findMemberList = em.createQuery("select m from Member as m", Member.class)
-                    .setFirstResult(5)
-                    .setMaxResults(8)
-                    .getResultList();
+            // 영속 상태, 영속성 컨텍스트 안에 member 객체가 들어가 관리된다
+            // BEFORE, AFTER 사이에 쿼리 질의문이 나오지 않는 상황
+            System.out.println("==== BEFORE ====");
+            em.persist(member);
+//            em.detach(member); // 영속 상태 제거
+            System.out.println("==== AFTER ====");
 
-            for (Member m : findMemberList) {
-                System.out.println(m.getName());
-            }
-
+            // tx.commit 시 영속성 컨텍스트의 내용이 DB에 날라간다
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

@@ -17,19 +17,17 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 비영속 상태
-            Member member = new Member();
-            member.setId(100L);
-            member.setName("HelloJPA");
+            Member member = em.find(Member.class, 150L);
+            member.setName("AAAAA");
 
-            // 영속 상태, 영속성 컨텍스트 안에 member 객체가 들어가 관리된다
-            // BEFORE, AFTER 사이에 쿼리 질의문이 나오지 않는 상황
-            System.out.println("==== BEFORE ====");
-            em.persist(member);
-//            em.detach(member); // 영속 상태 제거
-            System.out.println("==== AFTER ====");
+//            em.detach(member); // 준 영속 상태 (JPA에서 관리가 되지 않는다)
+            em.clear(); // 영속성 컨텍스트 (1차 캐시)를 전부 제거한다
+//            em.close(); // 영속성 컨텍스트를 닫는다, 데이터 변경사항이 적용되지 않는다
 
-            // tx.commit 시 영속성 컨텍스트의 내용이 DB에 날라간다
+            // 영속성 컨텍스트가 전부 제거되면, 1차 캐시에 값이 없기 때문에 쿼리가 두번 나간다
+            Member member2 = em.find(Member.class, 150L);
+
+            System.out.println("=========================");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

@@ -26,7 +26,10 @@
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.use_sql_comments" value="true"/> <!-- 주석 처리 -->
             <property name="hibernate.jdbc.batch_size" value="10"/> <!-- hibernate batch size -->
-            <!--<property name="hibernate.hbm2ddl.auto" value="create" />-->
+            <!--<property name="hibernate.hbm2ddl.auto" value="create"/>-->
+            <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
+            <!--<property name="hibernate.hbm2ddl.auto" value="validate"/>-->
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
         </properties>
     </persistence-unit>
 </persistence>

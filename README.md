@@ -8,7 +8,7 @@
 
 ### 🔨 Tech-Spec
 
-- JDK : Java 11
+- JDK : Java 8
 - F/W : Spring Boot 2.5.6
 - DB: H2
 - Build Tool : Maven

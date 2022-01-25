@@ -1,25 +1,24 @@
 package com.hello.jpasample;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
 public class MemberSample {
+
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    /*@GeneratedValue(
-            strategy = GenerationType.TABLE,
-            generator = "MEMBER_SEQ_GENERATOR"
-    )*/
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @Column(name = "MEMBER_ID")
     private Long id;
 
     @Column(name = "name", nullable = false)
     private String username;
 
-    public Member() {
-    }
+    /*@Column(name = "TEAM_ID")
+    private Long teamId;*/
+
+    @ManyToOne
+    @JoinColumn(name = "TEAM_ID")
+    private Team team;
 
     public Long getId() {
         return id;
@@ -35,5 +34,13 @@ public class MemberSample {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }

@@ -16,23 +16,33 @@ public class JpaMainSample {
         tx.begin();
 
         try {
+            // Team 객체 생성 후 저장
             Team team = new Team();
             team.setName("TeamA");
-            em.persist(team);
+            em.persist(team);                    // 1차 캐시에 team: name => TeamA
 
+            // Member 객체 생성 후 저장
             MemberSample member = new MemberSample();
             member.setUsername("member1");
-            member.setTeam(team);
-            em.persist(member); // 영속성 1차캐시에 저장, select query 안 날라가는 부분 기억
+//            member.changeTeam(team);           // 연관관계의 주인이 Member.team 이기에 team을 셋팅해준다
+            em.persist(member);                  // 1차 캐시에 member: username => member1
 
-            em.flush();
-            em.clear();
+            team.addMember(member);
 
-            MemberSample findMember = em.find(MemberSample.class, member.getId());
-            List<MemberSample> members = findMember.getTeam().getMember();
+//            team.getMember().add(member);    // 양방향 매핑시 반드시 양쪽에(Entity) 값을 셋팅 해준다
+
+//            em.flush();
+//            em.clear();
+
+            System.out.println("team.getId => " + team.getId());
+            Team findTeam = em.find(Team.class, team.getId()); //** 1차 캐시, 아까 값이 나오지 않았던 이유는 Team 순수 객체에서만 값을 가져오기 때문이다
+            List<MemberSample> members = findTeam.getMember();
+
+            System.out.println("============");
             for (MemberSample m : members) {
-                System.out.println("m = " + m.getUsername());
+                System.out.println("m = " + findTeam);
             }
+            System.out.println("============");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

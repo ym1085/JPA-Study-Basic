@@ -14,7 +14,7 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team")
-    private List<MemberSample> member = new ArrayList<>();
+    private List<MemberSample> members = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -33,10 +33,24 @@ public class Team {
     }
 
     public List<MemberSample> getMember() {
-        return member;
+        return members;
     }
 
     public void setMember(List<MemberSample> member) {
-        this.member = member;
+        this.members = member;
+    }
+
+    public void addMember(MemberSample member) {
+        member.setTeam(this); // 파라미터 인자로 들어온 member에 team을 셋팅
+        members.add(member);
+    }
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", members=" + members +
+                '}';
     }
 }

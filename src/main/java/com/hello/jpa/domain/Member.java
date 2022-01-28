@@ -1,6 +1,8 @@
 package com.hello.jpa.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Member {
@@ -9,6 +11,10 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "MEMBER_ID")
     private Long id;
+
+    @OneToMany(mappedBy = "member")
+    private List<Order> order = new ArrayList<>();
+
     private String name;
     private String city;
     private String street;

@@ -13,7 +13,8 @@ public class Team {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany
+    @JoinColumn(name = "TEAM_ID")
     private List<MemberSample> members = new ArrayList<>();
 
     public Long getId() {
@@ -32,25 +33,11 @@ public class Team {
         this.name = name;
     }
 
-    public List<MemberSample> getMember() {
+    public List<MemberSample> getMembers() {
         return members;
     }
 
-    public void setMember(List<MemberSample> member) {
-        this.members = member;
-    }
-
-    public void addMember(MemberSample member) {
-        member.setTeam(this); // 파라미터 인자로 들어온 member에 team을 셋팅
-        members.add(member);
-    }
-
-    @Override
-    public String toString() {
-        return "Team{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", members=" + members +
-                '}';
+    public void setMembers(List<MemberSample> members) {
+        this.members = members;
     }
 }

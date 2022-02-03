@@ -10,14 +10,11 @@ public class MemberSample {
     @Column(name = "MEMBER_ID")
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "USERNAME")
     private String username;
 
-    /*@Column(name = "TEAM_ID")
-    private Long teamId;*/
-
     @ManyToOne
-    @JoinColumn(name = "TEAM_ID")
+    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
     private Team team;
 
     public Long getId() {
@@ -35,26 +32,4 @@ public class MemberSample {
     public void setUsername(String username) {
         this.username = username;
     }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
-    @Override
-    public String toString() {
-        return "MemberSample{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", team=" + team +
-                '}';
-    }
-
-    /*public void changeTeam(Team team) {
-        this.team = team;
-        team.getMember().add(this); // 양방향 매핑시 연관관계 편의 메서드를 사용하여 양쪽에 값을 다 넣어준다
-    }*/
 }

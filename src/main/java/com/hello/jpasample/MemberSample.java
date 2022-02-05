@@ -17,6 +17,10 @@ public class MemberSample {
     @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
     private Team team;
 
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID") // 연관관계의 주인 (FK)
+    private Locker locker;
+
     public Long getId() {
         return id;
     }

@@ -15,21 +15,26 @@ public class JpaMainSample {
         tx.begin();
 
         try {
+            /* MemberSample */
             MemberSample member = new MemberSample();
-            member.setUsername("member1");
+            member.setUsername("테스트유저2");
 
-            em.persist(member);
+            em.persist(member); // member 등록
 
-            System.out.println("====맴버 등록====");
+            /* Product */
+            Product product = new Product();
+            product.setName("냉장고");
 
-            Team team = new Team();
-            team.setName("teamA");
-            team.getMembers().add(member);
+            em.persist(product); // product 등록
 
-            em.persist(team);
+            /* MemberProduct */
+            MemberProduct memberProduct = new MemberProduct();
+            memberProduct.setCount(2);  // 수량
+            memberProduct.setPrice(100000);  // 가격
+            memberProduct.setMember(member);    // member 셋팅
+            memberProduct.setProduct(product);  // product 셋팅
 
-            System.out.println("====팀 등록====");
-
+            em.persist(memberProduct);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

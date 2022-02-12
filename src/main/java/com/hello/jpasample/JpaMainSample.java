@@ -15,26 +15,29 @@ public class JpaMainSample {
         tx.begin();
 
         try {
-            /* MemberSample */
-            MemberSample member = new MemberSample();
-            member.setUsername("테스트유저2");
+            /* movie 등록 */
+            Movie movie = new Movie();
+            movie.setDirector("영화감독");
+            movie.setActor("이준기");
+            movie.setName("바람과 함께 사라지다");
+            movie.setPrice(10000);
 
-            em.persist(member); // member 등록
+            em.persist(movie);
 
-            /* Product */
-            Product product = new Product();
-            product.setName("냉장고");
+            /* 영속성 컨텍스트에 존재하는 데이터 DB 전송 */
+            em.flush();
 
-            em.persist(product); // product 등록
+            /* 1차 캐시 비우기 */
+            em.clear();
 
-            /* MemberProduct */
-            MemberProduct memberProduct = new MemberProduct();
-            memberProduct.setCount(2);  // 수량
-            memberProduct.setPrice(100000);  // 가격
-            memberProduct.setMember(member);    // member 셋팅
-            memberProduct.setProduct(product);  // product 셋팅
+            /* 영화 내역 조회 */
+            Movie findMovie = em.find(Movie.class, movie.getId());
+            System.out.println("findMovie = " + findMovie);
 
-            em.persist(memberProduct);
+            /* 구현 클래스마다 테이블 전략 : 다형성을 사용하여 조회 */
+            /*ItemSample item = em.find(ItemSample.class, movie.getId());
+            System.out.println("item = " + item);*/
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

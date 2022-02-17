@@ -7,7 +7,7 @@ import javax.persistence.*;
 //@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 단일 테이블 전략
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) // 구현 클래스마다 테이블 전략
 @DiscriminatorColumn // DTYPE 생성
-public abstract class ItemSample {
+public abstract class ItemSample extends BaseEntity {
 
     @Id
     @GeneratedValue

@@ -1,11 +1,12 @@
 package com.hello.jpasample;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class MemberSample {
+public class MemberSample extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,6 +23,11 @@ public class MemberSample {
     @OneToOne
     @JoinColumn(name = "LOCKER_ID") // 연관관계의 주인 (FK)
     private Locker locker;
+
+    private String createdBy;
+    private LocalDateTime createdDate;
+    private String lastModifiedBy;
+    private LocalDateTime lastModifiedDate;
 
 //    @ManyToMany
 //    @JoinTable(name = "MEMBERSAMPLE_PRODUCT")

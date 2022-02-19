@@ -1,4 +1,4 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,5 +15,5 @@ public class Locker {
     private String name;
 
     @OneToOne(mappedBy = "locker")
-    private MemberSample member;
+    private MemberTest member;
 }

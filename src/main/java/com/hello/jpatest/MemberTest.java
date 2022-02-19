@@ -1,4 +1,4 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class MemberSample extends BaseEntity {
+public class MemberTest extends BaseEntityTest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

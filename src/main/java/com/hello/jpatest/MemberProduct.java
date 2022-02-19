@@ -1,4 +1,4 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class MemberProduct {
 
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
-    private MemberSample member;
+    private MemberTest member;
 
     @ManyToOne
     @JoinColumn(name = "PRODUCT_ID")
@@ -31,11 +31,11 @@ public class MemberProduct {
         this.id = id;
     }
 
-    public MemberSample getMember() {
+    public MemberTest getMember() {
         return member;
     }
 
-    public void setMember(MemberSample member) {
+    public void setMember(MemberTest member) {
         this.member = member;
     }
 

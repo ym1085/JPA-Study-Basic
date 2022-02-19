@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Item {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 상속 관계 매핑 전략, 단일 테이블 전략
+@DiscriminatorColumn // DTYPE
+public abstract class Item extends BaseEntity { // Item은 단독으로 사용이 안될거라 가정하고 추상 클래스 선언
 
     @Id
     @GeneratedValue

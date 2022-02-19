@@ -1,4 +1,4 @@
-package com.hello.jpasample;
+package com.hello.jpa.domain;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

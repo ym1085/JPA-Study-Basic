@@ -1,7 +1,6 @@
 package com.hello.jpa;
 
-import com.hello.jpa.domain.Order;
-import com.hello.jpa.domain.OrderItem;
+import com.hello.jpa.domain.Book;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -12,19 +11,15 @@ public class JpaMain {
 
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello"); // META-INF 파일을 읽는다
-
         EntityManager em = emf.createEntityManager();
-
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
         try {
-            Order order = new Order();
-//            order.addOrderItem(new OrderItem());
-
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            em.persist(orderItem);
+            Book book = new Book();
+            book.setName("JPA");
+            book.setAuthor("김영한");
+            em.persist(book);
 
             tx.commit();
         } catch (Exception e) {

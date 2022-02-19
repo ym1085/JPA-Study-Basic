@@ -1,11 +1,11 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("B")
-public class Book extends ItemSample {
+public class BookTest extends ItemTest {
 
     private String author;
     private String isbn;

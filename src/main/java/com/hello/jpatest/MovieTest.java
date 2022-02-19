@@ -1,11 +1,11 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("M")
-public class Movie extends ItemSample {
+public class MovieTest extends ItemTest {
 
     private String director;
     private String actor;

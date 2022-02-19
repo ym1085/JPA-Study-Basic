@@ -1,4 +1,4 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.*;
 import java.util.ArrayList;

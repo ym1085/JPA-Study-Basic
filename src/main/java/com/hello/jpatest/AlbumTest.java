@@ -1,11 +1,11 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("A")
-public class Album extends ItemSample {
+public class AlbumTest extends ItemTest {
 
     private String artist;
 }

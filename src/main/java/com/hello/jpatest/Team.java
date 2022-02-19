@@ -1,4 +1,4 @@
-package com.hello.jpasample;
+package com.hello.jpatest;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class Team {
 
     @OneToMany
     @JoinColumn(name = "TEAM_ID")
-    private List<MemberSample> members = new ArrayList<>();
+    private List<MemberTest> members = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -33,11 +33,11 @@ public class Team {
         this.name = name;
     }
 
-    public List<MemberSample> getMembers() {
+    public List<MemberTest> getMembers() {
         return members;
     }
 
-    public void setMembers(List<MemberSample> members) {
+    public void setMembers(List<MemberTest> members) {
         this.members = members;
     }
 }

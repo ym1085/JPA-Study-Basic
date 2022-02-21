@@ -1,11 +1,10 @@
 package com.hello.jpatest;
 
-import org.hibernate.Hibernate;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMainTest {
 
@@ -17,36 +16,31 @@ public class JpaMainTest {
         tx.begin();
 
         try {
+            Team team = new Team();
+            team.setName("첫번째 팀1");
+            em.persist(team);
+
+            Team teamB = new Team();
+            teamB.setName("첫번째 팀1");
+            em.persist(teamB);
+
             MemberTest member1 = new MemberTest();
-            member1.setUsername("member1");
+            member1.setUsername("member");
+            member1.setTeam(team);
             em.persist(member1);
+
+            MemberTest member2 = new MemberTest();
+            member2.setUsername("member");
+            member2.setTeam(teamB);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            MemberTest refMember = em.getReference(MemberTest.class, member1.getId());
-            System.out.println("refMember = " + refMember.getClass());
-//            refMember.getUsername();
-            Hibernate.initialize(refMember);
-
-            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember)); // false 나와야함
-
-            // 일반적인 조회
-            /*MemberTest findMember = em.find(MemberTest.class, member.getId());
-            System.out.println("findMember = " + findMember.getId());
-            System.out.println("findMember = " + findMember.getUsername());*/
-
-            /*System.out.println("================================================");
-            System.out.println("member.getUserName = " + member.getId());
-            System.out.println("member.getUserName = " + member.getUsername());
-            System.out.println("================================================");*/
-
-            // 프록시를 통한 조회
-            /*MemberTest findMember = em.getReference(MemberTest.class, member.getId());
-            System.out.println("findMember : getClass() = " + findMember.getClass());
-            System.out.println("findMember : getId() = " + findMember.getId());
-            System.out.println("findMember = " + findMember.getUsername());*/
-
+//            MemberTest m = em.find(MemberTest.class, member.getId()); // 일반 조회
+            List<MemberTest> members =
+                    em.createQuery("select m from MemberTest m join fetch m.team", MemberTest.class)
+                            .getResultList(); // JPQL
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

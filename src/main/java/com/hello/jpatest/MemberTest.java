@@ -13,8 +13,9 @@ public class MemberTest extends BaseEntityTest {
     @Column(name = "USERNAME")
     private String username;
 
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    // @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY) // 실무에서는 즉시 로딩 사용 지양, 지연 로딩 사용
+    @JoinColumn
     private Team team;
 
     public Long getId() {

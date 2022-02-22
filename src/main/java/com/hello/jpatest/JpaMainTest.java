@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 public class JpaMainTest {
 
@@ -16,31 +15,25 @@ public class JpaMainTest {
         tx.begin();
 
         try {
-            Team team = new Team();
-            team.setName("첫번째 팀1");
-            em.persist(team);
+            Child child1 = new Child();
+            Child child2 = new Child();
 
-            Team teamB = new Team();
-            teamB.setName("첫번째 팀1");
-            em.persist(teamB);
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
 
-            MemberTest member1 = new MemberTest();
-            member1.setUsername("member");
-            member1.setTeam(team);
-            em.persist(member1);
+            em.persist(parent); // cascade -> 한 방에 날라갈거고
+            em.persist(child1);
+            em.persist(child2);
 
-            MemberTest member2 = new MemberTest();
-            member2.setUsername("member");
-            member2.setTeam(teamB);
-            em.persist(member2);
+            em.flush(); // db에 날리고
+            em.clear(); // 영속성 비우고 -> 안 비우면 영속성 컨텍스트 안에서 가져온다
 
-            em.flush();
-            em.clear();
+            Parent findParent = em.find(Parent.class, parent.getId());
+            em.remove(findParent);
 
-//            MemberTest m = em.find(MemberTest.class, member.getId()); // 일반 조회
-            List<MemberTest> members =
-                    em.createQuery("select m from MemberTest m join fetch m.team", MemberTest.class)
-                            .getResultList(); // JPQL
+//            findParent.getChildList().remove(0); // call delete query
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

@@ -15,24 +15,12 @@ public class JpaMainTest {
         tx.begin();
 
         try {
-            Child child1 = new Child();
-            Child child2 = new Child();
+            MemberTest member = new MemberTest();
+            member.setUsername("ymkim");
+            member.setHomeAddress(new Address("city", "streer", "zipcode"));
+            member.setPeriod(new Period());
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-
-            em.persist(parent); // cascade -> 한 방에 날라갈거고
-            em.persist(child1);
-            em.persist(child2);
-
-            em.flush(); // db에 날리고
-            em.clear(); // 영속성 비우고 -> 안 비우면 영속성 컨텍스트 안에서 가져온다
-
-            Parent findParent = em.find(Parent.class, parent.getId());
-            em.remove(findParent);
-
-//            findParent.getChildList().remove(0); // call delete query
+            em.persist(member);
 
             tx.commit();
         } catch (Exception e) {
@@ -43,27 +31,5 @@ public class JpaMainTest {
         }
 
         emf.close();
-    }
-
-    /**
-     * 회원명만 가져오는 메서드
-     *
-     * @param member
-     */
-    private static void printMember(MemberTest member) {
-        System.out.println("member = " + member.getUsername());
-    }
-
-    /**
-     * 팀명과 회원 정보를 가져오는 메서드
-     *
-     * @param member
-     */
-    private static void printMemberAndTeam(MemberTest member) {
-        String username = member.getUsername();
-        System.out.println("username = " + username);
-
-        Team team = member.getTeam();
-        System.out.println("team = " + team.getName());
     }
 }

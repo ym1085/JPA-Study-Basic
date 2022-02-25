@@ -3,7 +3,7 @@ package com.hello.jpatest;
 import javax.persistence.*;
 
 @Entity
-public class MemberTest extends BaseEntityTest {
+public class MemberTest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -13,10 +13,21 @@ public class MemberTest extends BaseEntityTest {
     @Column(name = "USERNAME")
     private String username;
 
-    // @ManyToOne(fetch = FetchType.EAGER)
-    @ManyToOne(fetch = FetchType.LAZY) // 실무에서는 즉시 로딩 사용 지양, 지연 로딩 사용
-    @JoinColumn
-    private Team team;
+    // 기간 Period
+    @Embedded
+    private Period period;
+
+    // 주소
+    @Embedded
+    private Address homeAddress;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
+            @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
+    })
+    private Address workAddress;
 
     public Long getId() {
         return id;
@@ -34,11 +45,19 @@ public class MemberTest extends BaseEntityTest {
         this.username = username;
     }
 
-    public Team getTeam() {
-        return team;
+    public Period getPeriod() {
+        return period;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setPeriod(Period period) {
+        this.period = period;
+    }
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
     }
 }

@@ -21,13 +21,14 @@ public class MemberTest {
     @Embedded
     private Address homeAddress;
 
-    @Embedded
+    // 동일한 객체를 사용하는데 이름이 다른경우 @AttributeOverrides를 사용해 처리한다.
+    /*@Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
             @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
             @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
     })
-    private Address workAddress;
+    private Address workAddress;*/
 
     public Long getId() {
         return id;

@@ -15,24 +15,40 @@ public class JpaMainTest {
         tx.begin();
 
         try {
-            Address address = new Address("서울", "강남구", "14554"); // Address object is embedded type
-
             MemberTest member = new MemberTest();
-            member.setUsername("테스트유저1");
-            member.setHomeAddress(address);
+            member.setUsername("youngminkim");
+            member.setHomeAddress(new Address("homeCity", "street1", "10000")); // embedded type
+
+            // Set<String> favoriteFoods
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("피자");
+            member.getFavoriteFoods().add("햄버거");
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street1", "14565"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street1", "14566"));
+
             em.persist(member);
 
-            // 임베디드 타입인 address 참조 변수를 인수로 등록, 별로 문제가 안된다
-            MemberTest member2 = new MemberTest();
-            member2.setUsername("김정남");
-            member2.setHomeAddress(address);
-            em.persist(member2);
+            em.flush();
+            em.clear();
 
-            // member가 가진 Address 객체만 바꾸려는 의도는 알겠다만, 이 부분이 문제가 됨
-            // Address를 불변객체로 만들어서 사용해야 한다.
-            //      1. Setter를 없앤다.
-            //      2. Setter를 private로 선언한다.
-            // member.getHomeAddress().setCity("새로운 서울");
+            System.out.println("=======================START=====================");
+            MemberTest findMember = em.find(MemberTest.class, member.getId());
+
+            // MemberTest가 가지고 있는 homeAddress 객체의 city 값을 변경한다.
+            // 아래 소소는 불가능하다
+            // findMember.getHomeAddress().setCity("newCity");
+
+            // Address oldAddress = findMember.getHomeAddress();
+            // findMember.setHomeAddress(new Address("newCity", oldAddress.getStreet(), oldAddress.getZipcode())); // ⚡ 통으로 갈아 끼워야 한다.
+
+            // Collection 내에 존재하는 '치킨'을 '한식'으로 변경한다.
+            // findMember.getFavoriteFoods().remove("치킨");
+            // findMember.getFavoriteFoods().add("한식");
+
+            // 주소 'old1'을 삭제 후 변경 한다.
+            // findMember.getAddressHistory().remove(new Address("old1", "street1", "14565"));
+            // findMember.getAddressHistory().add(new Address("newCity1", "street1", "14565"));
 
             tx.commit();
         } catch (Exception e) {

@@ -1,7 +1,5 @@
 package com.hello.jpa;
 
-import com.hello.jpa.domain.Book;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -16,10 +14,24 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Book book = new Book();
-            book.setName("JPA");
-            book.setAuthor("김영한");
-            em.persist(book);
+            // ⚡ : JPQL 쿼리 작성
+//            String qlString = "select m From Member m where m.name like '%kim%'";
+//            List<Member> resultList = em.createQuery(
+//                    qlString,
+//                    Member.class
+//            ).getResultList();
+
+            // ⚡ : criteriaQuery 사용
+            // JPA Criteria는 실무에서 사용이 잘 안된다.
+//            CriteriaBuilder cb = em.getCriteriaBuilder();
+//            CriteriaQuery<Member> query = cb.createQuery(Member.class);
+//
+//            Root<Member> m = query.from(Member.class);
+//            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("name"), "kim"));
+//            List<Member> resultList = em.createQuery(cq).getResultList();
+
+            // ⚡ : Native SQL 사용
+            em.createNativeQuery("select MEMBER_ID, city, street, zipcode, USERNAME FROM MEMBER").getResultList();
 
             tx.commit();
         } catch (Exception e) {

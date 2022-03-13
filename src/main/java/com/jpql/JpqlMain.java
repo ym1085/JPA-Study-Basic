@@ -1,13 +1,16 @@
 package com.jpql;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.util.List;
 
 /**
  * JPQL Main Class
  *
  * @author ymkim
- * @since 2022.03.10 Thurs 23:42
+ * @since 2022.03.13 Sun 10:33
  */
 public class JpqlMain {
 
@@ -23,27 +26,40 @@ public class JpqlMain {
             member.setAge(10);
             em.persist(member);
 
-            // ⚡ : commit or flush or query 발생하면 db에 날라가는 부분 깜빡했음
-            TypedQuery<JpqlMember> query = em.createQuery("select m from JpqlMember m", JpqlMember.class);
+            em.flush();
+            em.clear();
 
-//            TypedQuery<JpqlMember> query2 = em.createQuery("select m.username from JpqlMember m", String.class);
-//            TypedQuery<JpqlMember> query3 = em.createQuery("select m.username, m.age from JpqlMember m");
+            // 01. 엔티티 프로젝션을 사용하면 select 구문에 나오는 모든 엔티티가 영속성 컨텍스트에서 모두 관리된다.
+            /*List<JpqlMember> result = em.createQuery("select m From JpqlMember m", JpqlMember.class)
+                    .getResultList();*/
 
-            List<JpqlMember> memberList = query.getResultList();
-            for (JpqlMember jpqlMember : memberList) {
-                System.out.println("jpqlMember ==> " + jpqlMember.toString());
-                System.out.println("jpqlMember ====> " + jpqlMember.getUsername());
-                System.out.println("jpqlMember ====> " + jpqlMember.getAge());
-            }
+            // 02. join을 사용하는 경우
+            /*em.createQuery("select t From Member m join m.team t", Member.class);*/
 
-            // ⚡ : getSingleResult()는 반드시 값이 한 개인 경우에만 사용을 해야 한다.
-            // 위치 기반은 사용하지 말자, 이름 기준으로 사용하자.
-            TypedQuery<JpqlMember> query2 = em.createQuery("select m from JpqlMember m where m.username = :username", JpqlMember.class)
-                    .setParameter("username", "member1");
-            JpqlMember result = query2.getSingleResult();
+            // 03. 임베디드 타입 프로젝션, 값 타입 지정
+            /*em.createQuery("select o.address From JpqlOrder o", JpqlAddress.class)
+                    .getResultList();*/
 
-            // Spring Data JPA -> return Optional or Null
-            System.out.println("result ==> " + result.getUsername());
+            // 04. 스칼라 타입 프로젝션
+            /*em.createQuery("select distinct m.username, m.age From JpqlMember m")
+                    .getResultList();*/
+
+            // 05. m.username, m.age인데 타입은 어떤걸로 지정해야 하지??
+            // 05-1. Query, Object [], new로 조회
+            /*List<Object[]> resultList = em.createQuery("select distinct m.username, m.age From JpqlMember m")
+                    .getResultList();
+
+            Object[] result = resultList.get(0);
+            System.out.println("result = " + result[0]);
+            System.out.println("result = " + result[1]);*/
+
+            // 06. DTO로 받음, qlString이 문자기 때문에 패키지명을 모두 적어줘야 한다.
+            List<JpqlMemberDTO> result = em.createQuery("select new com.jpql.JpqlMemberDTO(m.username, m.age) From JpqlMember m", JpqlMemberDTO.class)
+                    .getResultList();
+
+            JpqlMemberDTO memberDTO = result.get(0);
+            System.out.println("memberDTO = " + memberDTO.getUsername());
+            System.out.println("memberDTO = " + memberDTO.getAge());
 
             tx.commit();
         } catch (Exception e) {

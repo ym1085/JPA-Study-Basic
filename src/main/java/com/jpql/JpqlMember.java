@@ -13,9 +13,15 @@ public class JpqlMember {
     private String username;
     private int age;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TEAM_ID")
     private JpqlTeam team;
+
+    // 연관관계 편의 메서드
+    public void changeTeam(JpqlTeam team) {
+        this.team = team;
+        team.getMemberList().add(this);
+    }
 
     public Long getId() {
         return id;
@@ -39,6 +45,14 @@ public class JpqlMember {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public JpqlTeam getTeam() {
+        return team;
+    }
+
+    public void setTeam(JpqlTeam team) {
+        this.team = team;
     }
 
     // toString 생성 시 양쪽에서 생성 안되도록 주의 하여야 한다.

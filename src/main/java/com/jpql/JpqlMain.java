@@ -21,28 +21,45 @@ public class JpqlMain {
         tx.begin();
 
         try {
-            for (int i = 0; i < 100; i++) {
-                JpqlMember member = new JpqlMember();
-                member.setUsername("member" + i);
-                member.setAge(i);
-                em.persist(member);
-            }
+            JpqlTeam team = new JpqlTeam();
+            team.setName("teamA");
+            em.persist(team);
+
+            JpqlMember member = new JpqlMember();
+//            member.setUsername("member1");
+            member.setUsername("teamA"); // seta 비교용
+            member.setAge(10);
+
+            member.setTeam(team);
+            em.persist(member);
+
             em.flush();
             em.clear();
 
-            // 01. 페이징 처리
-            List<JpqlMember> resultList = em.createQuery("select m From JpqlMember m order by m.age desc", JpqlMember.class)
-//                    .setFirstResult(0) // idx
-//                    .setFirstResult(0)
-//                    .setMaxResults(10)
-                    .setFirstResult(35)
-                    .setMaxResults(10) // 최대 갯수 지정 35 ~ 45
+            // 01. [inner] join
+            String query1 = "select m from JpqlMember m join m.team t";
+            List<JpqlMember> resultList1 = em.createQuery(query1, JpqlMember.class)
                     .getResultList();
 
-            System.out.println("memberList.size = " + resultList.size());
-            for (JpqlMember result : resultList) {
-                System.out.println("result = " + result);
-            }
+            // 02. left [outer] join
+            String query2 = "select m from JpqlMember m left outer join m.team t";
+            List<JpqlMember> resultList2 = em.createQuery(query2, JpqlMember.class)
+                    .getResultList();
+
+            // 03. seta join, cross join
+            String query3 = "select m from JpqlMember m, JpqlTeam t where m.username = t.name";
+            List<JpqlMember> resultList3 = em.createQuery(query3, JpqlMember.class)
+                    .getResultList();
+
+            // 04. 조인 대상 필터링
+            String query4 = "select m from JpqlMember m left join m.team t on t.name = 'teamA'";
+            List<JpqlMember> resultList4 = em.createQuery(query4, JpqlMember.class)
+                    .getResultList();
+
+            // 05. 연관관계가 없는 엔티티 외부 조인
+            String query5 = "select m from JpqlMember m left join Team t on m.username = t.name"; // 막 조인
+            List<JpqlMember> resultList5 = em.createQuery(query5, JpqlMember.class)
+                    .getResultList();
 
             tx.commit();
         } catch (Exception e) {

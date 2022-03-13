@@ -1,9 +1,8 @@
 package com.jpql;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "JPQL_TEAM")
@@ -11,9 +10,13 @@ public class JpqlTeam {
 
     @Id
     @GeneratedValue
+    @Column(name = "TEAM_ID")
     private Long id;
 
     private String name;
+
+    @OneToMany(mappedBy = "team")
+    private List<JpqlMember> memberList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -29,5 +32,13 @@ public class JpqlTeam {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<JpqlMember> getMemberList() {
+        return memberList;
+    }
+
+    public void setMemberList(List<JpqlMember> memberList) {
+        this.memberList = memberList;
     }
 }

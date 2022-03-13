@@ -1,13 +1,16 @@
 package com.jpql;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.util.List;
 
 /**
  * JPQL Main Class
  *
  * @author ymkim
- * @since 2022.03.10 Thurs 23:42
+ * @since 2022.03.13 Sun 10:33
  */
 public class JpqlMain {
 
@@ -18,32 +21,45 @@ public class JpqlMain {
         tx.begin();
 
         try {
+            JpqlTeam team = new JpqlTeam();
+            team.setName("teamA");
+            em.persist(team);
+
             JpqlMember member = new JpqlMember();
-            member.setUsername("member1");
+//            member.setUsername("member1");
+            member.setUsername("teamA"); // seta 비교용
             member.setAge(10);
+
+            member.setTeam(team);
             em.persist(member);
 
-            // ⚡ : commit or flush or query 발생하면 db에 날라가는 부분 깜빡했음
-            TypedQuery<JpqlMember> query = em.createQuery("select m from JpqlMember m", JpqlMember.class);
+            em.flush();
+            em.clear();
 
-//            TypedQuery<JpqlMember> query2 = em.createQuery("select m.username from JpqlMember m", String.class);
-//            TypedQuery<JpqlMember> query3 = em.createQuery("select m.username, m.age from JpqlMember m");
+            // 01. [inner] join
+            String query1 = "select m from JpqlMember m join m.team t";
+            List<JpqlMember> resultList1 = em.createQuery(query1, JpqlMember.class)
+                    .getResultList();
 
-            List<JpqlMember> memberList = query.getResultList();
-            for (JpqlMember jpqlMember : memberList) {
-                System.out.println("jpqlMember ==> " + jpqlMember.toString());
-                System.out.println("jpqlMember ====> " + jpqlMember.getUsername());
-                System.out.println("jpqlMember ====> " + jpqlMember.getAge());
-            }
+            // 02. left [outer] join
+            String query2 = "select m from JpqlMember m left outer join m.team t";
+            List<JpqlMember> resultList2 = em.createQuery(query2, JpqlMember.class)
+                    .getResultList();
 
-            // ⚡ : getSingleResult()는 반드시 값이 한 개인 경우에만 사용을 해야 한다.
-            // 위치 기반은 사용하지 말자, 이름 기준으로 사용하자.
-            TypedQuery<JpqlMember> query2 = em.createQuery("select m from JpqlMember m where m.username = :username", JpqlMember.class)
-                    .setParameter("username", "member1");
-            JpqlMember result = query2.getSingleResult();
+            // 03. seta join, cross join
+            String query3 = "select m from JpqlMember m, JpqlTeam t where m.username = t.name";
+            List<JpqlMember> resultList3 = em.createQuery(query3, JpqlMember.class)
+                    .getResultList();
 
-            // Spring Data JPA -> return Optional or Null
-            System.out.println("result ==> " + result.getUsername());
+            // 04. 조인 대상 필터링
+            String query4 = "select m from JpqlMember m left join m.team t on t.name = 'teamA'";
+            List<JpqlMember> resultList4 = em.createQuery(query4, JpqlMember.class)
+                    .getResultList();
+
+            // 05. 연관관계가 없는 엔티티 외부 조인
+            String query5 = "select m from JpqlMember m left join Team t on m.username = t.name"; // 막 조인
+            List<JpqlMember> resultList5 = em.createQuery(query5, JpqlMember.class)
+                    .getResultList();
 
             tx.commit();
         } catch (Exception e) {

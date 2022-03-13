@@ -20,6 +20,7 @@
                 - ex) 페이징: MySQL은 Limit, ORACLE은 ROWNUM
             -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!--<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>-->
 
             <!-- 옵션 -->
             <property name="hibernate.show_sql" value="true"/>

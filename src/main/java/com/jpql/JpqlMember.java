@@ -17,6 +17,9 @@ public class JpqlMember {
     @JoinColumn(name = "TEAM_ID")
     private JpqlTeam team;
 
+    @Enumerated(EnumType.STRING)
+    private MemberType type; // ADMIN, USER
+
     // 연관관계 편의 메서드
     public void changeTeam(JpqlTeam team) {
         this.team = team;
@@ -53,6 +56,14 @@ public class JpqlMember {
 
     public void setTeam(JpqlTeam team) {
         this.team = team;
+    }
+
+    public MemberType getType() {
+        return type;
+    }
+
+    public void setType(MemberType type) {
+        this.type = type;
     }
 
     // toString 생성 시 양쪽에서 생성 안되도록 주의 하여야 한다.

@@ -30,27 +30,35 @@ public class JpqlMain {
             member.setUsername("teamA"); // seta 비교용
             member.setAge(10);
 
+//            member.setType(MemberType.ADMIN);
+            member.setType(MemberType.USER);
+
             member.setTeam(team);
             em.persist(member);
 
             em.flush();
             em.clear();
 
-            // 01. 스칼라 서브쿼리
-            String query1 = "select (select avg(m1.age) from JpqlMember m1) as avgAge from JpqlMember m join m.team t";
+            System.out.println("1");
 
-            // 02. 인라인 뷰, JPA는 FROM 절에서 사용이 되는 서브 쿼리를 지원하지 않는다.
-            // String sql = "select mm.age, mm.username from (select m.age, m.username from Member m) as mm";
+            // 01. JPQL 타입 실습
+            String query = "select m.username, 'HELLO', true From JpqlMember m " +
+                    " where m.type = :userType";
+            List<Object[]> resultList = em.createQuery(query)
+                    .setParameter("userType", MemberType.ADMIN)
+                    .getResultList();
 
-            List<JpqlMember> resultList = em.createQuery(query1, JpqlMember.class).getResultList();
-
+            for (Object[] objects : resultList) {
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
+            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
         } finally {
             em.close();
         }
-
         emf.close();
     }
 }

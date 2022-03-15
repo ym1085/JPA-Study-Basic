@@ -26,11 +26,11 @@ public class JpqlMain {
             em.persist(team);
 
             JpqlMember member = new JpqlMember();
-//            member.setUsername("member1");
-            member.setUsername("teamA"); // seta 비교용
+            // member.setUsername("teamA");
+            // member.setUsername(null); // coalesce 테스트
+            // member.setUsername("관리자"); // NULLIF 테스트 => null 반환 해야함
+            member.setUsername("졸리다"); // NULLIF 테스트 => null 반환 해야함
             member.setAge(10);
-
-//            member.setType(MemberType.ADMIN);
             member.setType(MemberType.USER);
 
             member.setTeam(team);
@@ -39,19 +39,24 @@ public class JpqlMain {
             em.flush();
             em.clear();
 
-            System.out.println("1");
+            // 01. case 식 사용
+            /*String query =
+                    "select " +
+                            "case when m.age <= 10 then '학생요금' " +
+                            "     when m.age >= 60 then '경로요금' " +
+                            "     else '일반요금' " +
+                            "end " +
+                            "from JpqlMember m";*/
 
-            // 01. JPQL 타입 실습
-            String query = "select m.username, 'HELLO', true From JpqlMember m " +
-                    " where m.type = :userType";
-            List<Object[]> resultList = em.createQuery(query)
-                    .setParameter("userType", MemberType.ADMIN)
-                    .getResultList();
+            // 02. coalesce :  하나씩 조회해서 null이 아니면 반환
+            // String query = "select coalesce(m.username, '이름 없는 회원') from JpqlMember m";
 
-            for (Object[] objects : resultList) {
-                System.out.println("objects = " + objects[0]);
-                System.out.println("objects = " + objects[1]);
-                System.out.println("objects = " + objects[2]);
+            // 03. NULLIF : 두 값이 같으면 null 반환, 다르면 첫 번째 값 반환
+            String query = "select NULLIF(m.username, '관리자') from JpqlMember m";
+            List<String> resultList = em.createQuery(query, String.class).getResultList();
+
+            for (String s : resultList) {
+                System.out.println("s  = " + s);
             }
             tx.commit();
         } catch (Exception e) {

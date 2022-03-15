@@ -36,30 +36,13 @@ public class JpqlMain {
             em.flush();
             em.clear();
 
-            // 01. [inner] join
-            String query1 = "select m from JpqlMember m join m.team t";
-            List<JpqlMember> resultList1 = em.createQuery(query1, JpqlMember.class)
-                    .getResultList();
+            // 01. 스칼라 서브쿼리
+            String query1 = "select (select avg(m1.age) from JpqlMember m1) as avgAge from JpqlMember m join m.team t";
 
-            // 02. left [outer] join
-            String query2 = "select m from JpqlMember m left outer join m.team t";
-            List<JpqlMember> resultList2 = em.createQuery(query2, JpqlMember.class)
-                    .getResultList();
+            // 02. 인라인 뷰, JPA는 FROM 절에서 사용이 되는 서브 쿼리를 지원하지 않는다.
+            // String sql = "select mm.age, mm.username from (select m.age, m.username from Member m) as mm";
 
-            // 03. seta join, cross join
-            String query3 = "select m from JpqlMember m, JpqlTeam t where m.username = t.name";
-            List<JpqlMember> resultList3 = em.createQuery(query3, JpqlMember.class)
-                    .getResultList();
-
-            // 04. 조인 대상 필터링
-            String query4 = "select m from JpqlMember m left join m.team t on t.name = 'teamA'";
-            List<JpqlMember> resultList4 = em.createQuery(query4, JpqlMember.class)
-                    .getResultList();
-
-            // 05. 연관관계가 없는 엔티티 외부 조인
-            String query5 = "select m from JpqlMember m left join Team t on m.username = t.name"; // 막 조인
-            List<JpqlMember> resultList5 = em.createQuery(query5, JpqlMember.class)
-                    .getResultList();
+            List<JpqlMember> resultList = em.createQuery(query1, JpqlMember.class).getResultList();
 
             tx.commit();
         } catch (Exception e) {

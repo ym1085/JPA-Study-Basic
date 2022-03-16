@@ -21,42 +21,47 @@ public class JpqlMain {
         tx.begin();
 
         try {
-            JpqlTeam team = new JpqlTeam();
-            team.setName("teamA");
-            em.persist(team);
+            JpqlMember member1 = new JpqlMember();
+            member1.setUsername("유저1");
+            member1.setAge(10);
+            member1.setType(MemberType.USER);
+            em.persist(member1);
 
-            JpqlMember member = new JpqlMember();
-            // member.setUsername("teamA");
-            // member.setUsername(null); // coalesce 테스트
-            // member.setUsername("관리자"); // NULLIF 테스트 => null 반환 해야함
-            member.setUsername("졸리다"); // NULLIF 테스트 => null 반환 해야함
-            member.setAge(10);
-            member.setType(MemberType.USER);
-
-            member.setTeam(team);
-            em.persist(member);
+            JpqlMember member2 = new JpqlMember();
+            member2.setUsername("유저2");
+            member2.setAge(20);
+            member2.setType(MemberType.ADMIN);
+            em.persist(member2);
 
             em.flush();
             em.clear();
 
-            // 01. case 식 사용
-            /*String query =
-                    "select " +
-                            "case when m.age <= 10 then '학생요금' " +
-                            "     when m.age >= 60 then '경로요금' " +
-                            "     else '일반요금' " +
-                            "end " +
-                            "from JpqlMember m";*/
+            // 01. concat -> 문자열 붙히기
+            String query = "select concat('a', 'b') from JpqlMember m";
+            String query2 = "select 'a' || 'b' from JpqlMember m";
 
-            // 02. coalesce :  하나씩 조회해서 null이 아니면 반환
-            // String query = "select coalesce(m.username, '이름 없는 회원') from JpqlMember m";
+            // 02. substring -> 문자열 위치 기반 자르기
+            String query3 = "select substring(m.username, 2, 3) from JpqlMember m";
 
-            // 03. NULLIF : 두 값이 같으면 null 반환, 다르면 첫 번째 값 반환
-            String query = "select NULLIF(m.username, '관리자') from JpqlMember m";
-            List<String> resultList = em.createQuery(query, String.class).getResultList();
+            // 03. trim -> 공백 제거
+            String query4 = "select trim(m.username) from JpqlMember m";
+
+            // 04. locate -> indexOf랑 비슷한 듯
+            String query5 = "select locate('de', 'abcdefg') from JpqlMember m";
+
+            // 05. size -> collection의 크기를 반환 한다.
+            String query6 = "select size(t.memberList) from JpqlTeam t";
+
+            // 06. index -> 사용 안하는게 좋음, 값 타입 컬렉션의 위치값을 반환 할 때 사용
+            String query7 = "select index(t.memberList) from JpqlTeam t";
+
+            // 07. 사용자 정의 함수 등록
+            String query8 = "select function('group_concat', m.username) from JpqlMember m";
+            List<String> resultList = em.createQuery(query8, String.class).getResultList();
 
             for (String s : resultList) {
                 System.out.println("s  = " + s);
+
             }
             tx.commit();
         } catch (Exception e) {

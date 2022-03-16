@@ -19,7 +19,10 @@
                 - 각각의 DB가 제공하는 SQL 문법과 함수는 조금씩 다름
                 - ex) 페이징: MySQL은 Limit, ORACLE은 ROWNUM
             -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <!--<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
+
+            <!-- 사용자 정의 함수로 등록한 클래스를 지정 -->
+            <property name="hibernate.dialect" value="com.dialect.MyH2Dialect"/>
             <!--<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>-->
 
             <!-- 옵션 -->

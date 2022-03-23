@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,72 +21,73 @@ public class JpqlMain {
         tx.begin();
 
         try {
-            JpqlTeam team = new JpqlTeam();
-            team.setName("경영관리부");
-            em.persist(team);
+            JpqlTeam teamA = new JpqlTeam();
+            teamA.setName("팀A");
+            em.persist(teamA);
+
+            JpqlTeam teamB = new JpqlTeam();
+            teamB.setName("팀B");
+            em.persist(teamB);
 
             JpqlMember member1 = new JpqlMember();
-            member1.setUsername("유저1");
-            member1.setAge(10);
-            member1.setType(MemberType.USER);
-            member1.setTeam(team);
+            member1.setUsername("회원1");
+            member1.setTeam(teamA);
             em.persist(member1);
 
             JpqlMember member2 = new JpqlMember();
-            member2.setUsername("유저2");
-            member2.setAge(20);
-            member2.setType(MemberType.ADMIN);
-            member2.setTeam(team);
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             em.persist(member2);
+
+            JpqlMember member3 = new JpqlMember();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-            // 01. 상태 필드 m.username.aa '.' 을 찍어서 경로 탐색이 불가능
-            String query = "select m.username From JpqlTeam t join t.memberList m";
+            System.out.println("===============================================================");
 
-            List<JpqlMember> resultList = em.createQuery(query, JpqlMember.class)
+            // basic join
+            String query = "select m From JpqlMember m";
+
+            // fetch join => N : 1 -> entity fetch join
+            String query1 = "select m From JpqlMember m join fetch m.team";
+            List<JpqlMember> memberList = em.createQuery(query1, JpqlMember.class)
                                             .getResultList();
 
-            for (JpqlMember member : resultList) {
-                System.out.println("member = " + member);
+//            회원1, 팀A(SQL)
+//            회원2, 팀A(1차캐시: 영속성 컨텐스트)
+//            회원3, 팀B(SQL)
+            for (JpqlMember member : memberList) {
+                System.out.println("member = " + member.getUsername() + ", "
+                        + member.getTeam()
+                                .getName());
             }
 
-            System.out.println("========================================================================");
+            System.out.println("\n");
 
-            // 02. 단일 값 연관 관계
-            //      - 묵시적 내부 조인(INNER JOIN)이 발생
-            //      - 객체 입장에서의 그래프 탐색은 상관이 없지만, DB에서는 JOIN을 통해 값을 가져오게 됨
-            String query2 = "select m.team From JpqlMember m";
+            // 1 : N -> collection fetch join
+            String query2 = "select t From JpqlTeam t join fetch t.memberList";
 
-            List<JpqlTeam> resultList2 = em.createQuery(query2, JpqlTeam.class)
-                                           .getResultList();
+            // 1 : N -> collection fetch join 'distinct'
+            String query3 = "select distinct t From JpqlTeam t join fetch t.memberList";
 
-            for (JpqlTeam team2 : resultList2) {
-                System.out.println("team2 = " + team2);
-            }
+            // 1 : N -> 일반 조인 fetch 제거
+            String query4 = "select t From JpqlTeam t join t.memberList m";
 
-            System.out.println("========================================================================");
-
-            // 03. 컬렉션 값 연관 관계
-            //      - 묵시적 내부 조인이 발생
-            //      - 탐색은 불가능하게 설계가 되어 있음
-            //      - FROM 절에 별칭을 사용하게 되면 탐색 역시 가능함
-            //      - select t.memberList.name <- 객체 그래프 탐색이 불가능
-            String query3 = "select t.memberList From JpqlTeam t";
-            Collection resultList3 = em.createQuery(query3, Collection.class)
-                                       .getResultList();
-
-            System.out.println("resultList3 = " + resultList3);
-
-            System.out.println("========================================================================");
-
-            String query4 = "select t.memberList From JpqlTeam t";
-            Collection singleResult = em.createQuery(query4, Collection.class)
+            List<JpqlTeam> teamList = em.createQuery(query4, JpqlTeam.class)
                                         .getResultList();
 
-            System.out.println("singleResult = " + singleResult);
-
+            System.out.println("teamList.size = " + teamList.size());
+            for (JpqlTeam team : teamList) {
+                System.out.println("team = " + team.getName() + ", " + team.getMemberList()
+                                                                           .size());
+                for (JpqlMember member : team.getMemberList()) {
+                    System.out.println("-> Member = " + member);
+                }
+            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

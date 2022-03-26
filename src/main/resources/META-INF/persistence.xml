@@ -34,6 +34,9 @@
             <!--<property name="hibernate.hbm2ddl.auto" value="create-drop"/>-->
             <!--<property name="hibernate.hbm2ddl.auto" value="validate"/>-->
             <property name="hibernate.hbm2ddl.auto" value="create"/>
+
+            <!-- betch size 지정-->
+            <property name="hibernate.default_batch_fetch_size" value="100"/>
         </properties>
     </persistence-unit>
 </persistence>

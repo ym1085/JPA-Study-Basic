@@ -47,27 +47,17 @@ public class JpqlMain {
             em.flush();
             em.clear();
 
-            // collection fetch join
-            String query = "select t From JpqlTeam t join fetch t.memberList m";
+            // 엔티티를 직접 파라미터로 전달
+//            String jpql = "select m From JpqlMember m where m = :member"; // member의 기본 키 값이 들어감
+//            String jpql = "select m From JpqlMember m where m.id = :memberId"; // 동일
+            String jpql = "select m From JpqlMember m where m.team = :team"; // team 외래 키 값이 들어감
 
-            // 해결 방안 01 : 방향으로 뒤짚어서 조회하고 페이징 처리, 회원에서 팀으로 가도록 방향을 수정
-            String query2 = "select m From JpqlMember m join fetch m.team t";
-
-            // 해결 방안 02 : join fetch를 과감하게 제거 한다
-            String query3 = "select t From JpqlTeam t";
-            List<JpqlTeam> teamList = em.createQuery(query3, JpqlTeam.class)
-                                        .setFirstResult(0)
-                                        .setMaxResults(2)
+            List<JpqlMember> member = em.createQuery(jpql, JpqlMember.class)
+                                        .setParameter("team", teamA)
                                         .getResultList();
 
-            System.out.println("teamList.size = " + teamList.size());
-            for (JpqlTeam team : teamList) {
-                System.out.println("team = " + team.getName() + ", " + team.getMemberList()
-                                                                           .size());
-                for (JpqlMember member : team.getMemberList()) {
-                    System.out.println("-> Member = " + member);
-                }
-            }
+            System.out.println("member = " + member);
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();

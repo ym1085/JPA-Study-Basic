@@ -47,37 +47,17 @@ public class JpqlMain {
             em.flush();
             em.clear();
 
-            System.out.println("===============================================================");
+            // collection fetch join
+            String query = "select t From JpqlTeam t join fetch t.memberList m";
 
-            // basic join
-            String query = "select m From JpqlMember m";
+            // 해결 방안 01 : 방향으로 뒤짚어서 조회하고 페이징 처리, 회원에서 팀으로 가도록 방향을 수정
+            String query2 = "select m From JpqlMember m join fetch m.team t";
 
-            // fetch join => N : 1 -> entity fetch join
-            String query1 = "select m From JpqlMember m join fetch m.team";
-            List<JpqlMember> memberList = em.createQuery(query1, JpqlMember.class)
-                                            .getResultList();
-
-//            회원1, 팀A(SQL)
-//            회원2, 팀A(1차캐시: 영속성 컨텐스트)
-//            회원3, 팀B(SQL)
-            for (JpqlMember member : memberList) {
-                System.out.println("member = " + member.getUsername() + ", "
-                        + member.getTeam()
-                                .getName());
-            }
-
-            System.out.println("\n");
-
-            // 1 : N -> collection fetch join
-            String query2 = "select t From JpqlTeam t join fetch t.memberList";
-
-            // 1 : N -> collection fetch join 'distinct'
-            String query3 = "select distinct t From JpqlTeam t join fetch t.memberList";
-
-            // 1 : N -> 일반 조인 fetch 제거
-            String query4 = "select t From JpqlTeam t join t.memberList m";
-
-            List<JpqlTeam> teamList = em.createQuery(query4, JpqlTeam.class)
+            // 해결 방안 02 : join fetch를 과감하게 제거 한다
+            String query3 = "select t From JpqlTeam t";
+            List<JpqlTeam> teamList = em.createQuery(query3, JpqlTeam.class)
+                                        .setFirstResult(0)
+                                        .setMaxResults(2)
                                         .getResultList();
 
             System.out.println("teamList.size = " + teamList.size());

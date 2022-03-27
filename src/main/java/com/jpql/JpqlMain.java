@@ -47,16 +47,14 @@ public class JpqlMain {
             em.flush();
             em.clear();
 
-            // 엔티티를 직접 파라미터로 전달
-//            String jpql = "select m From JpqlMember m where m = :member"; // member의 기본 키 값이 들어감
-//            String jpql = "select m From JpqlMember m where m.id = :memberId"; // 동일
-            String jpql = "select m From JpqlMember m where m.team = :team"; // team 외래 키 값이 들어감
+            // Named query 실습
+            List<JpqlMember> memberList = em.createNamedQuery("JpqlMember.findByUserName", JpqlMember.class)
+                                            .setParameter("username", member1.getUsername())
+                                            .getResultList();
 
-            List<JpqlMember> member = em.createQuery(jpql, JpqlMember.class)
-                                        .setParameter("team", teamA)
-                                        .getResultList();
-
-            System.out.println("member = " + member);
+            for (JpqlMember member : memberList) {
+                System.out.println("member = " + member);
+            }
 
             tx.commit();
         } catch (Exception e) {

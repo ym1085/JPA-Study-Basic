@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 /**
  * JPQL Main Class
@@ -31,30 +30,35 @@ public class JpqlMain {
 
             JpqlMember member1 = new JpqlMember();
             member1.setUsername("회원1");
+            member1.setAge(0);
             member1.setTeam(teamA);
             em.persist(member1);
 
             JpqlMember member2 = new JpqlMember();
             member2.setUsername("회원2");
+            member1.setAge(0);
             member2.setTeam(teamA);
             em.persist(member2);
 
             JpqlMember member3 = new JpqlMember();
             member3.setUsername("회원3");
+            member1.setAge(0);
             member3.setTeam(teamB);
             em.persist(member3);
 
-            em.flush();
+            // FLUSH 자동 호출 commit, query, flush
+            int resultCount = em.createQuery("update JpqlMember m set m.age = 20")
+                                .executeUpdate();
             em.clear();
 
-            // Named query 실습
-            List<JpqlMember> memberList = em.createNamedQuery("JpqlMember.findByUserName", JpqlMember.class)
-                                            .setParameter("username", member1.getUsername())
-                                            .getResultList();
+            JpqlMember jpqlMember = em.find(JpqlMember.class, member1.getId());
+            System.out.println("jpqlMember = " + jpqlMember.getAge());
 
-            for (JpqlMember member : memberList) {
-                System.out.println("member = " + member);
-            }
+            System.out.println("resultCount = " + resultCount);
+
+            System.out.println("member1.getAge() = " + member1.getAge());
+            System.out.println("member1.getAge() = " + member2.getAge());
+            System.out.println("member1.getAge() = " + member3.getAge());
 
             tx.commit();
         } catch (Exception e) {
